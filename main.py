@@ -22,7 +22,7 @@ held_keys = {K_LEFT: False, K_RIGHT: False, K_UP: False}
 # Define constants for the screen width and height
 info_object = pygame.display.Info()
 
-SCREEN_WIDTH = info_object.current_w // 2
+SCREEN_WIDTH = info_object.current_w
 SCREEN_HEIGHT = info_object.current_h
 
 GRAVITY = 0.03
@@ -31,14 +31,14 @@ GRAVITY = 0.03
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.Surface((75, 25))
+        self.surf = pygame.Surface((8, 12))
         self.surf.fill((255, 255, 255))
         self.rect = self.surf.get_rect()
         self.x = 0
         self.y = 0.
         self.grounded = True
-        self.jumpspeed = -6
-        self.jumpshortspeed = -3
+        self.jumpspeed = -2
+        self.jumpshortspeed = -1
 
     def left_right(self, pressed_keys, n, m, o, p):
         if pressed_keys[n]:
@@ -62,8 +62,8 @@ class Player(pygame.sprite.Sprite):
                 if self.y < self.jumpshortspeed:
                     self.y = self.jumpshortspeed
 
-        self.left_right(pressed_keys, K_LEFT, K_RIGHT, -5, 5)
-        self.left_right(pressed_keys, K_RIGHT, K_LEFT, 5, -5)
+        self.left_right(pressed_keys, K_LEFT, K_RIGHT, -1, 1)
+        self.left_right(pressed_keys, K_RIGHT, K_LEFT, 1, -1)
 
         if not (pressed_keys[K_LEFT] or pressed_keys[K_RIGHT]):
             self.x = 0
@@ -71,12 +71,12 @@ class Player(pygame.sprite.Sprite):
         # Keep player on the screen
         if self.rect.left < 0:
             self.rect.left = 0
-        if self.rect.right > SCREEN_WIDTH:
-            self.rect.right = SCREEN_WIDTH
+        if self.rect.right > 320:
+            self.rect.right = 320
         if self.rect.top <= 0:
             self.rect.top = 0
-        if self.rect.bottom >= SCREEN_HEIGHT:
-            self.rect.bottom = SCREEN_HEIGHT
+        if self.rect.bottom >= 180:
+            self.rect.bottom = 180
             self.grounded = True
             self.y = 0
         else:
@@ -110,7 +110,8 @@ class Enemy(pygame.sprite.Sprite):
 
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.NOFRAME)
+screen = pygame.Surface((320, 180))
+window = pygame.display.set_mode((SCREEN_WIDTH//2, SCREEN_HEIGHT//2), pygame.NOFRAME)
 
 # Create a custom event for adding a new enemy
 ADDENEMY = pygame.USEREVENT + 1
@@ -166,5 +167,6 @@ while running:
         player.kill()
         running = False
 
+    window.blit(pygame.transform.scale(screen, window.get_rect().size), (0, 0))
     # Update the display
     pygame.display.flip()
